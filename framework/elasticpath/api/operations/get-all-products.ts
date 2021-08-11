@@ -4,6 +4,7 @@ import type { OperationContext } from '@commerce/api/operations'
 import type { ElasticpathConfig, Provider } from '../index'
 import { gateway as MoltinGateway } from '@moltin/sdk'
 import normalizeProduct from '../../utils/normalize'
+import data from '../../data.json'
 
 const Moltin = MoltinGateway({
   client_id: process.env.NEXT_PUBLIC_ELASTICPATH_CLIENTID
@@ -27,6 +28,7 @@ export default function getAllProductsOperation({
     let normalizeProducts = await normalizeProduct(products.data)
     return {
       products: normalizeProducts,
+      // products: data.products,
     }
   }
   return getAllProducts
