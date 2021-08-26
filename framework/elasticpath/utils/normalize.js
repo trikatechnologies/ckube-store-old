@@ -6,6 +6,7 @@ const Moltin = MoltinGateway({
 })
 
 const normalizeProduct = async(products) => {
+	// console.log("products", products)
 	let normalizeProducts = []
 
 	const productImageGet = async(fileId) => {
@@ -19,9 +20,11 @@ const normalizeProduct = async(products) => {
 
 	const normalizeProductImages = async(productId) => {
 		let fileId;
-		if (productId.relationships.hasOwnProperty("main_image")) {
-			fileId = productId.relationships.main_image.data.id;
+		// console.log("productId", productId.relationships)
+		if (productId.relationships.files.data) {
+			fileId = productId.relationships.files.data[0].id;
 			let productImageObject = await productImageGet(fileId);
+			// console.log("productImageObject", productImageObject.data.link.href)
 			return productImageObject.data.link.href;
 		}
 		return '';
@@ -47,20 +50,20 @@ const normalizeProduct = async(products) => {
 		  ];
 	}
 
-	for (let index in products) {
-		let product = products[index];
-
+	for (let index in products.data) {
+		let product = products.data[index];
+		// console.log("product-single", product)
 		normalizeProducts.push({
 			"id": product.hasOwnProperty("id") ? product.id : '',
-			"name": product.hasOwnProperty("name") ? product.name : '',
+			"name": product.attributes.hasOwnProperty("name") ? product.attributes.name : '',
 			"vendor": "trika",
-			"path": product.hasOwnProperty("slug") ? "/" + product.slug : '',
-			"slug": `${product.hasOwnProperty("slug") ? product.slug:''}`,
+			"path": product.attributes.hasOwnProperty("slug") ? "/" + product.attributes.slug : '',
+			"slug": `${product.attributes.hasOwnProperty("slug") ? product.attributes.slug:''}`,
 			"price": {
-				"value": product.hasOwnProperty("price") ? product.price[0].hasOwnProperty("amount") ? product.price[0].amount : '' : '',
-				"currencyCode": product.hasOwnProperty("price") ? product.price[0].hasOwnProperty("currency") ? product.price[0].currency : '' : ''
+				"value": product.meta.hasOwnProperty("display_price") ? product.meta.display_price.without_tax.hasOwnProperty("amount") ? product.meta.display_price.without_tax.amount : '' : '',
+				"currencyCode": product.meta.hasOwnProperty("display_price") ? product.meta.display_price.without_tax.hasOwnProperty("currency") ? product.meta.display_price.without_tax.currency : '' : ''
 			},
-			"descriptionHtml": product.hasOwnProperty("description") ? product.description : null,
+			"descriptionHtml": product.attributes.hasOwnProperty("description") ? product.attributes.description : null,
 			"images": [{
 				"url": await normalizeProductImages(product),
 				"altText": "Shirt",

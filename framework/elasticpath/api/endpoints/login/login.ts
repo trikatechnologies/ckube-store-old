@@ -33,7 +33,7 @@ const login: LoginEndpoint['handlers']['login'] = async ({
     let expiry = new Date(Date.now() + tokens.data.expires);
     // encodeing the tocken object with btoa
     // in clinet side, use atob to decode the token object
-    let cookieValue = `customer_token=${btoa(customer_token)};Expires=${expiry};Path=/`
+    let cookieValue = `customer_token=${Buffer.from(customer_token).toString('base64')};Expires=${expiry};Path=/`
     res.setHeader("Set-Cookie", cookieValue);
 
     return res.status(200).json(tokens);

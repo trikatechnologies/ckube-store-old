@@ -9,7 +9,7 @@ import normalizeProduct from '../../utils/normalize'
 const Moltin = MoltinGateway({
   client_id: process.env.NEXT_PUBLIC_ELASTICPATH_CLIENTID
 })
-
+//Moltin.config.version="pcm";
 export default function getProductOperation({
   commerce,
 }: OperationContext<any>) {
@@ -34,11 +34,11 @@ export default function getProductOperation({
         slug: variablesS 
       }
     }).All();
-    let normalizeProducts = await normalizeProduct(products.data)
-    let productSlugs = normalizeProducts.find(({ slug }) => slug === variables!.slug);
+    // let normalizeProducts = await normalizeProduct(products.data)
+    // let productSlugs = normalizeProducts.find(({ slug }) => slug === variables!.slug);
     return {
-      // product: data.products.find(({ slug }) => slug === variables!.slug),
-      product: productSlugs
+      product: data.products.find(({ slug }) => slug === variables!.slug),
+      // product: productSlugs
     }
   }
 
