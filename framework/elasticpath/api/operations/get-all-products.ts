@@ -25,10 +25,9 @@ export default function getAllProductsOperation({
     config?: Partial<ElasticpathConfig>
     preview?: boolean
   } = {}): Promise<{ products: Product[] | any[] }> {
+
     const moltinToken = await getCustomerMoltinToken();
-    // console.log("moltinToken", moltinToken)
     const storeId = process.env.NEXT_PUBLIC_ELASTICPATH_STOREID;
-    // elastic path get all products
     var myHeaders = new Headers();
     myHeaders.append("accept", "application/json");
     myHeaders.append("content-type", "application/json");
@@ -44,7 +43,6 @@ export default function getAllProductsOperation({
     // console.log("allProducts", await allProducts.json())
     // let products = await Moltin.Products.Limit(200).All();
     let normalizeProducts = await normalizeProduct(await allProducts.json())
-    // console.log("normalizeProducts", normalizeProducts)
     return {
       products: normalizeProducts,
       // products: data.products,

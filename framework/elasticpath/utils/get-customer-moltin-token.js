@@ -2,7 +2,8 @@ const storeId = process.env.NEXT_PUBLIC_ELASTICPATH_STOREID;
 const clientid = process.env.NEXT_PUBLIC_ELASTICPATH_CLIENTID;
 const clientSecret = process.env.ELASTICPATH_SECRET;
 
-const tokenExpires = false;
+let tokenExpires = false;
+let tokenValid = null;
 
 const getToken = async () => {
     var myHeaders = new Headers();
@@ -22,15 +23,16 @@ const getToken = async () => {
         body: urlencoded,
     };
 
-    const token = await fetch("https://api.moltin.com/oauth/access_token", requestOptions)
-    return token.json();
+    tokenValid = await fetch("https://api.moltin.com/oauth/access_token", requestOptions)
+    return tokenValid.json();
 }
 const getCustomerMoltinToken = async () => {
-    if (tokenExpires == false) {
-      const token = await getToken();
-      return token;
+    if (!tokenExpires) {
+        const token = await getToken();
+        tokenExpires = true;
+        return token;
     } else {
-        return '';
+        return tokenValid.json();
     }
 }
 export default getCustomerMoltinToken;

@@ -17,9 +17,7 @@ export default function getAllProductPathsOperation() {
     // let normalizeProducts = await normalizeProduct(products.data)
     // let productPaths = normalizeProducts.map(({ path }) => ({ path }));
     const moltinToken = await getCustomerMoltinToken();
-    // console.log("moltinToken", moltinToken.access_token)
     const storeId = process.env.NEXT_PUBLIC_ELASTICPATH_STOREID;
-    // elastic path get all products
     var myHeaders = new Headers();
     myHeaders.append("accept", "application/json");
     myHeaders.append("content-type", "application/json");
@@ -30,13 +28,11 @@ export default function getAllProductPathsOperation() {
       method: 'GET',
       headers: myHeaders
     })
-    // console.log("allProducts", await allProducts.json())
     let normalizeProducts = await normalizeProduct(await allProducts.json())
     let productPaths = normalizeProducts.map(({ path }) => ({ path }));
-    console.log("productPaths", productPaths)
     return await Promise.resolve({
-      // products: productPaths
-      products: data.products.map(({ path }) => ({ path })),
+      products: productPaths
+      // products: data.products.map(({ path }) => ({ path })),
     })
   }
 
