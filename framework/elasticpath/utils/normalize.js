@@ -5,6 +5,7 @@ const Moltin = MoltinGateway({
 	client_id: process.env.NEXT_PUBLIC_ELASTICPATH_CLIENTID
 })
 
+
 const normalizeProduct = async(products) => {
 	let normalizeProducts = []
 
@@ -13,70 +14,59 @@ const normalizeProduct = async(products) => {
 			let apiImage = await Moltin.Files.Get(fileId);
 			return apiImage;
 		} catch (error) {
-
+			console.error(fileId, error);
 		}
 	}
+
+	const getPrices = (prices) => {
+
+		if(!prices) {
+			return [{
+				"value": 0,
+				"currencyCode": 'USD'
+			}];
+		}
+
+		let allPrices = []
+		for(let key in prices) {
+			allPrices.push({
+				"value": prices[key].amount/100,
+				"currencyCode": key
+			})
+		}
+		return allPrices
+	} 
 
 	const normalizeProductImages = async(productId) => {
-		let fileId;
-		if (productId.relationships.hasOwnProperty("main_image")) {
-			fileId = productId.relationships.main_image.data.id;
+		let fileId = productId.relationships?.files?.data[0]?.id;
+		if (fileId) {
 			let productImageObject = await productImageGet(fileId);
-			return productImageObject.data.link.href;
+			return productImageObject?.data?.link?.href || '/assets/lightweight-jacket-0.png';
 		}
-		return '';
-	}
-
-	const normalizeProductVariants = (productVariants) => {
 		return '';
 	}
 
 	for (let index in products) {
 		let product = products[index];
-
+		
 		normalizeProducts.push({
-			"id": product.hasOwnProperty("id") ? product.id : null,
-			"name": product.hasOwnProperty("name") ? product.name : null,
+			"id":  product.id,
+			"name": product.attributes?.name,
 			"vendor": "trika",
-			"path": product.hasOwnProperty("name") ? "/" + product.name : null,
-			"slug": `${product.hasOwnProperty("slug") ? product.slug:null}`,
-			"price": {
-				"value": product.hasOwnProperty("price") ? product.price[0].hasOwnProperty("amount") ? product.price[0].amount : null : null,
-				"currencyCode": product.hasOwnProperty("price") ? product.price[0].hasOwnProperty("currency") ? product.price[0].currency : null : null
-			},
-			"descriptionHtml": product.hasOwnProperty("description") ? product.description : null,
+			"path": "/"+product.attributes?.slug,
+			"slug": product.attributes?.slug,
+			"price": getPrices(product.attributes?.price)[0],
+			"descriptionHtml": product.attributes?.description,
 			"images": [{
 				"url": await normalizeProductImages(product),
 				"altText": "Shirt",
 				"width": 1000,
 				"height": 1000
 			}],
-			"variants": normalizeProductVariants(product),
-			"options": [{
-					"id": "option-color",
-					"displayName": "Color",
-					"values": [{
-						"label": "color",
-						"hexColors": [
-							"#222"
-						]
-					}]
-				},
-				{
-					"id": "option-size",
-					"displayName": "Size",
-					"values": [{
-							"label": "S"
-						},
-						{
-							"label": "M"
-						},
-						{
-							"label": "L"
-						}
-					]
-				}
-			]
+			"variants": [{
+				"options": []
+			}],
+			"options": []
 		})
 	}
 	return normalizeProducts;
