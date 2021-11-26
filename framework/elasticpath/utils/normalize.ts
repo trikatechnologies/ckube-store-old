@@ -28,7 +28,7 @@ const getPrices = (prices:any) => {
 async function normalizeProductImages (product:any, allImages?:boolean): Promise< ProductImage[]> {
 
 	let fileCalls = [],
-			fileData = product.relationships?.files?.data || [];
+			fileData = product?.relationships?.files?.data || [];
 
 
 		for(let {id} of fileData) {
@@ -59,12 +59,12 @@ async function normalizeProductImages (product:any, allImages?:boolean): Promise
 
 export const normalizeProduct = async(product:any, allImages?: boolean) => {
 	return {
-		"id":  product.id,
-		"name": product.attributes?.name,
-		"path": "/"+product.attributes?.slug,
-		"slug": product.attributes?.slug,
-		"price": getPrices(product.attributes?.price)[0],
-		"description": product.attributes?.description,
+		"id":  product?.id,
+		"name": product?.attributes?.name,
+		"path": "/"+product?.attributes?.slug,
+		"slug": product?.attributes?.slug,
+		"price": getPrices(product?.attributes?.price)[0],
+		"description": product?.attributes?.description,
 		"images":  await normalizeProductImages(product, allImages),
 		"variants": [
 			{

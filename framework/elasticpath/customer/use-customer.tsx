@@ -14,7 +14,7 @@ export const handler: SWRHook<any> = {
     if(!creds.id || !creds.token) {
       return null;
     }
-
+    console.log(options);
     const {data} = await fetch({
       ...options,
       variables:{

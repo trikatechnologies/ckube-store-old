@@ -33,3 +33,41 @@ export const handler: SWRHook<GetAddressesHook> = {
       )
     },
 }
+
+// import type { GetAddressesHook } from '@commerce/types/customer/address'
+
+// import { useMemo } from 'react'
+// import { SWRHook } from '@commerce/utils/types'
+// import epClient from '../../utils/ep-client'
+// import useAddresses, {
+//   UseAddresses,
+// } from '@commerce/customer/address/use-addresses'
+
+// export default useAddresses as UseAddresses<typeof handler>
+// export const handler: SWRHook<GetAddressesHook> = {
+//   fetchOptions: {
+//     query: '',
+//   },
+//   async fetcher({ input, options, fetch }) {
+//     return epClient.Cart().AddProduct(input.productId);
+//   },
+//   useHook: ({ useData }) =>
+//     function useHook(input) {
+//       const response = useData({
+//         swrOptions: { revalidateOnFocus: false, ...input?.swrOptions },
+//       })
+
+//       return useMemo(
+//         () =>
+//           Object.create(response, {
+//             isEmpty: {
+//               get() {
+//                 return (response.data?.length ?? 0) <= 0
+//               },
+//               enumerable: true,
+//             },
+//           }),
+//         [response]
+//       )
+//     },
+// }
