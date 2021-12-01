@@ -10,11 +10,15 @@ export const fetcher: Fetcher = async ({
   if(url && method) {
     try {
 
+      console.log(epClient)
       console.log(params)
       console.log(url)
       console.log(method)
-      console.log(epClient)
+
+
+
       let res = await epClient[url][method](...params);
+
       if(res.errors && res.errors > 0) {
         let error = res.errors[0];
         throw new FetcherError({ 
