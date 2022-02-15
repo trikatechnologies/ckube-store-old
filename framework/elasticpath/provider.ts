@@ -20,8 +20,8 @@ import { handler as useAddCardItem } from './customer/card/use-add-item'
 import { handler as useAddresses } from './customer/address/use-addresses'
 import { handler as useAddAddressItem } from './customer/address/use-add-item'
 
-import getTax from './tax/get-tax'
-import showTax from './tax/show-tax'
+import  useAddShipping from './shipping/shipping-rates'
+import getTax from './tax/get_tax'
 
 import {fetcher} from './fetcher'
 
@@ -49,9 +49,11 @@ export const elasticpathProvider = {
       useAddItem: useAddAddressItem,
     },
   },
+  shipping:{
+    useAddShipping
+  },
   tax: {
-    getTax,
-    showTax
+    getTax
   },
   products: { useSearch },
   auth: { useLogin, useLogout, useSignup },
