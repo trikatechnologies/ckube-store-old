@@ -1,3 +1,5 @@
+import shipping from '@framework/shipping/shipping-rates'
+
 const normalizeLineItem = ({
   id, 
   name, 
@@ -35,7 +37,12 @@ const normalizeLineItem = ({
 const normalizeCart = async (cart, lineItems) => {
   const {with_tax, without_tax} = cart.meta?.display_price;
   const {amount} = cart.meta?.display_price?.tax;
-
+  const customer_address = JSON.parse(localStorage.getItem("customerAddress"))
+  const shippingRate = 0;
+  if(customer_address !== null){
+    shippingRate = await shipping(customer_address, cart)
+    console.log("with_tax + shippingRates", (with_tax.amount/100) + shippingRate)
+  }
   return {
     id: cart.id,
     createdAt: cart.meta.timestamps.created_at,
@@ -44,8 +51,9 @@ const normalizeCart = async (cart, lineItems) => {
     lineItems: lineItems?.map(normalizeLineItem) ?? [],
     lineItemsSubtotalPrice: cart.meta?.display_price.without_tax || 0,
     subtotalPrice: (without_tax.amount/100) || 0,
-    totalPrice: (with_tax.amount/100) || 0,
-    tax: (amount/100) || 0
+    totalPrice: (with_tax.amount/100)+ shippingRate,
+    tax: (amount/100) || 0,
+    shipping: shippingRate
   };
 }
 

@@ -55,7 +55,7 @@ const CheckoutSidebarView: FC = () => {
   )
   const { price: shipping_rates } = usePrice(
     cartData && {
-      amount: Number(0),
+      amount: Number(cartData.shipping),
       currencyCode: cartData.currency.code,
     }
   )

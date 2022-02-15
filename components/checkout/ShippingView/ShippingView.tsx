@@ -5,6 +5,9 @@ import Button from '@components/ui/Button'
 import { useUI } from '@components/ui/context'
 import SidebarLayout from '@components/common/SidebarLayout'
 import useAddAddress from '@framework/customer/address/use-add-item'
+import shippingRates from '@framework/shipping/shipping-rates'
+import getTax from '@framework/tax/get_tax'
+import useCart from '@framework/cart/use-cart'
 
 import s from './ShippingView.module.css'
 
@@ -25,11 +28,11 @@ interface Form extends HTMLFormElement {
 const ShippingView: FC = () => {
   const { setSidebarView } = useUI()
   const addAddress = useAddAddress()
-
+  const { data:cart_data } = useCart()
   async function handleSubmit(event: React.ChangeEvent<Form>) {
     event.preventDefault()
 
-    await addAddress({
+    const customerAddress:object = {
       type: event.target.type.value,
       firstName: event.target.firstName.value,
       lastName: event.target.lastName.value,
@@ -39,8 +42,14 @@ const ShippingView: FC = () => {
       zipCode: event.target.zipCode.value,
       city: event.target.city.value,
       country: event.target.country.value,
-    })
-
+    }
+    localStorage.setItem("customerAddress",JSON.stringify(customerAddress));
+    await Promise.all([
+      shippingRates(customerAddress, cart_data),
+      getTax(customerAddress, cart_data),
+      addAddress(customerAddress)
+    ]);
+    
     setSidebarView('CHECKOUT_VIEW')
   }
 

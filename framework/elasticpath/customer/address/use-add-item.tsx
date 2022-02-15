@@ -1,6 +1,4 @@
-import type { AddItemHook } from '@commerce/types/customer/address'
 import type { MutationHook } from '@commerce/utils/types'
-import useCart from '@framework/cart/use-cart'
 import { useCallback } from 'react'
 import useAddItem, { UseAddItem } from '@commerce/customer/address/use-add-item'
 import useAddresses from './use-addresses'
@@ -24,16 +22,11 @@ export const handler: MutationHook<any> = {
       token:customer_token.token
     })
   },
+
   useHook: ({ fetch }) =>
     function useHook() {
       const { mutate } = useAddresses()
       const { setAddressFields } = useCheckoutContext()
-      const { data:cart_data } = useCart()
-      async function wait(s: number | undefined) {
-        return new Promise(resolve => {
-          setTimeout(resolve, s);
-        });
-      }
       return useCallback(
         async function addItem(input) {
           const customerAddress = {
@@ -48,28 +41,14 @@ export const handler: MutationHook<any> = {
             country: input.country,
             instructions: ""
           }
-          const endpoint = {
-            url: '/store-events/61fa794ba1e1b500303a695a/get-tax',
-            method: 'POST'
-          }
-          const payload = {
-            payload:{
-              data:{
-                cart_id:cart_data.id,
-                shipping_address: customerAddress
-              }
-            }
-          }
-          const response = await adminRequest(endpoint, payload)
-          if (response?.status == 200){
-            await wait(4000);
-            await epClient.Cart().Get();
-            await fetch({ input:customerAddress })
-            setAddressFields(input)
-            return input
-          }
+          
+          await epClient.Cart().Get();
+          const data = await fetch({ input:customerAddress })
+          await mutate([data], false)
+          setAddressFields(data)
+          return data
         },
-        [setAddressFields]
+        [fetch, mutate, setAddressFields]
       )
     },
   }

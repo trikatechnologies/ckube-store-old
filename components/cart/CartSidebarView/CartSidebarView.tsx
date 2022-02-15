@@ -34,7 +34,7 @@ const CartSidebarView: FC = () => {
   )
   const { price: shipping_rates } = usePrice(
     data && {
-      amount: Number(0),
+      amount: Number(data.shipping),
       currencyCode: data.currency.code,
     }
   )

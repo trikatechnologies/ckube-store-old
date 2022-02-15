@@ -18,10 +18,8 @@ const adminRequest = async (
   };
   
   if(customer_token.token){
-    console.log(customer_token,config,base_url)
     try {
       let res = await axios(config)
-      console.log("new_adminRequest",res)
       return {
         ...res, 
         success: true
