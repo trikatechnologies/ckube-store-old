@@ -4,6 +4,8 @@ import { MutationHook } from '@commerce/utils/types'
 import { CommerceError } from '@commerce/utils/errors'
 import useSignup, { UseSignup } from '@commerce/auth/use-signup'
 import epClient from '../utils/ep-client'
+import jwt_access from '@framework/api/token/jwt-token'
+import Cookies from 'js-cookie'
 
 export default useSignup as UseSignup<typeof handler>
 
@@ -25,6 +27,12 @@ export const handler: MutationHook<any> = {
       type: "customer",
       name: `${firstName} ${lastName}`, 
       password });
+      const cus_details = {
+        email: email,
+        customerId: data.customer_id
+      }
+      const customer_token = await jwt_access(cus_details);
+      Cookies.set("jwt_token",JSON.stringify(customer_token));
     return data || null;
   },
   useHook: ({ fetch }) => () => {

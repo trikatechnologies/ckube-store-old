@@ -4,6 +4,7 @@ import { CommerceError } from '@commerce/utils/errors'
 import useLogin, { UseLogin } from '@commerce/auth/use-login'
 import useCustomer from '../customer/use-customer'
 import Cookies from 'js-cookie'
+import jwt_access from '@framework/api/token/jwt-token'
 
 export default useLogin as UseLogin<typeof handler>
 
@@ -25,8 +26,13 @@ export const handler: MutationHook<any> = {
         params: [email, password]
       }
     });
-
+    const cus_details = {
+      email: email,
+      customerId: token.customer_id
+    }
+    const customer_token = await jwt_access(cus_details);
     let expireTime = Math.round(token.expires/(1000*24*60*60));
+    Cookies.set("jwt_token",JSON.stringify(customer_token), { expires: expireTime });
     Cookies.set("user_token", 
                 JSON.stringify(token), 
                 { expires: expireTime });
