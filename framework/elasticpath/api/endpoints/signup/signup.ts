@@ -1,4 +1,5 @@
 import type { SignupEndpoint } from '.'
+import jwtToken from '../../token/jwt-token';
 
 const MoltinGateway = require('@moltin/sdk').gateway
 const Moltin = MoltinGateway({
@@ -29,8 +30,38 @@ const signup: SignupEndpoint['handlers']['signup'] = async ({
     password: password
   }
   try {
-    let customerAPI = await Moltin.Customers.Create(customer)
-    return res.status(200).json(customerAPI);
+    let customerData = await Moltin.Customers.Create(customer)
+    if(customerData){
+      
+        let tokens = await Moltin.Customers.Token(email, password);
+        let customer_token = JSON.stringify({
+          customer_id: tokens.data.customer_id,
+          token: tokens.data.token,
+          id: tokens.data.id
+        });
+        let expiry = new Date(Date.now() + tokens.data.expires);
+        // generate jwt token based on customer data
+        let tokenData = {
+          customerId: tokens.data.customer_id,
+          email:email,
+          ecommerce: process.env.COMMERCE_PROVIDER
+        };
+        let token = await jwtToken.jwt_token(tokenData)
+        
+        // set the token to header
+        let jwt_token = `jwt_token=${token};Expires=${expiry};Path=/`;
+        let user_token = `user_token=${customer_token};Expires=${expiry};Path=/`
+        res.setHeader("Set-Cookie", [user_token, jwt_token]);
+        return res.status(200).json(tokens);
+      }
+      else {
+        return res.status(401).json({
+          data: null,
+          errors: [{ 
+            message: 'Account not created. Please try again',
+            code: 'invalid_credentials',}],
+          })
+      }
   } catch (error) {
     let errorData = error.errors[0];
     // Check if the email and password didn't match an existing account

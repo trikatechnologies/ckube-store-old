@@ -3,13 +3,13 @@ import useCustomer from '../customer/use-customer'
 import { MutationHook } from '@commerce/utils/types'
 import { CommerceError } from '@commerce/utils/errors'
 import useSignup, { UseSignup } from '@commerce/auth/use-signup'
-import epClient from '../utils/ep-client'
 
 export default useSignup as UseSignup<typeof handler>
 
 export const handler: MutationHook<any> = {
   fetchOptions: {
-    query: '',
+    url: 'api/signup',
+    method: 'POST',
   },
   async fetcher({ input: { firstName, lastName, email, password }, options, fetch }) {
     console.log("input", firstName)
@@ -20,12 +20,14 @@ export const handler: MutationHook<any> = {
       })
     }
 
-    const data = await epClient.Customers.Create({
-      email, 
-      type: "customer",
-      name: `${firstName} ${lastName}`, 
-      password });
-    return data || null;
+    const data = await fetch({
+      ...options,
+      variables: {
+        params:{firstName, lastName, email, password },
+        apiType:'backend'
+      }
+    })
+    return data || null
   },
   useHook: ({ fetch }) => () => {
     const { revalidate } = useCustomer()

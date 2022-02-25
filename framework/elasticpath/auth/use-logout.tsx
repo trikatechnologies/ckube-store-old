@@ -12,6 +12,7 @@ export const handler: MutationHook<any> = {
   },
   async fetcher() {
     Cookies.remove("user_token");
+    Cookies.remove("jwt_token");
   },
   useHook: ({ fetch }) => () => {
     const { mutate } = useCustomer()

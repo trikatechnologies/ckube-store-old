@@ -1,5 +1,6 @@
 import { FetcherError } from '@commerce/utils/errors'
 import type { LoginEndpoint } from '.'
+import jwtToken from '../../token/jwt-token';
 
 const MoltinGateway = require('@moltin/sdk').gateway
 const Moltin = MoltinGateway({
@@ -28,13 +29,22 @@ const login: LoginEndpoint['handlers']['login'] = async ({
     let customer_token = JSON.stringify({
       customer_id: tokens.data.customer_id,
       token: tokens.data.token,
-      tokenid: tokens.data.id
+      id: tokens.data.id
     });
     let expiry = new Date(Date.now() + tokens.data.expires);
+    // generate jwt token based on customer data
+    let tokenData = {
+      customerId: tokens.data.customer_id,
+      email:email,
+      ecommerce: process.env.COMMERCE_PROVIDER
+    };
+    let token = await jwtToken.jwt_token(tokenData)
+    
     // encodeing the tocken object with btoa
     // in clinet side, use atob to decode the token object
-    let cookieValue = `customer_token=${btoa(customer_token)};Expires=${expiry};Path=/`
-    res.setHeader("Set-Cookie", cookieValue);
+    let jwt_token = `jwt_token=${token};Expires=${expiry};Path=/`;
+    let user_token = `user_token=${customer_token};Expires=${expiry};Path=/`
+    res.setHeader("Set-Cookie", [user_token, jwt_token]);
 
     return res.status(200).json(tokens);
   } catch (error) {
