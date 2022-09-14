@@ -15,7 +15,7 @@ const customer_token = getCookie('user_token');
  
  function getShipping (cartId : any){
   console.log(cartId , "in tax calculation") 
- const tax =   axios({
+ const shipping =   axios({
     url: 'http://localhost:3000/events/store/showShipping',
     method: 'POST',
     data: {
@@ -29,7 +29,7 @@ const customer_token = getCookie('user_token');
   .then((response) =>{
     return (response.data.shippingRates[0].shipmentCost)
   })
-  return tax
+  return shipping 
 }
 
   export default  function useShowShipping(

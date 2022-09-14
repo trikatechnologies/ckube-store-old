@@ -11,9 +11,6 @@ import ShippingWidget from '../ShippingWidget'
 import PaymentWidget from '../PaymentWidget'
 import s from './CheckoutSidebarView.module.css'
 import { useCheckoutContext } from '../context'
-import GetTaxationWidget from '@components/checkout/GetTaxationWidget'
-import ShowTaxationWidget from '@components/checkout/ShowTaxWidget'
-import ShippingRatesWidget from '@components/checkout/ShippingRatesWidget'
 import useShowTax from '@framework/tax/show-tax'
 import useShowShipping from '@framework/shippingRates/get-shipping-rates'
 
@@ -37,7 +34,7 @@ const CheckoutSidebarView: FC = () => {
          cartId : cartData.id
        }
      )
-     setTax(res);
+     setTax((res * 100).toFixed(2));
    }
 
    callTax();
@@ -50,7 +47,7 @@ const CheckoutSidebarView: FC = () => {
          cartId : cartData.id
        }
      )
-     setShipping(res);
+     setShipping((res* 100).toFixed(2));
    }
  
   callShipping();
@@ -107,18 +104,7 @@ const CheckoutSidebarView: FC = () => {
         <div className="px-4 sm:px-6 flex-1">
            
           </div>  
-          <div className="px-4 sm:px-6 flex-1">
-            <ShowTaxationWidget
-              isValid={checkoutData?.hasShipping}
-              onClick={() => setSidebarView('SHOW_TAXATION_VIEW')}
-            />
-          </div>  
-          <div className="px-4 sm:px-6 flex-1">
-            <ShippingRatesWidget
-              isValid={checkoutData?.hasShipping}
-              onClick={() => setSidebarView('SHIPPING_RATES_WIDGET')}
-            />
-          </div>
+          
 
         <ul className={s.lineItemsList}>
           {cartData!.lineItems.map((item: any) => (
@@ -143,11 +129,11 @@ const CheckoutSidebarView: FC = () => {
           </li>
           <li className="flex justify-between py-1">
             <span>Taxes</span>
-            <span>{tax}</span>
+            <span>${tax}</span>
           </li>
           <li className="flex justify-between py-1">
             <span>Shipping</span>
-            <span className="font-bold tracking-wide">{shipping}</span>
+            <span className="font-bold tracking-wide">${shipping}</span>
           </li>
         </ul>
         <div className="flex justify-between border-t border-accent-2 py-3 font-bold mb-2">

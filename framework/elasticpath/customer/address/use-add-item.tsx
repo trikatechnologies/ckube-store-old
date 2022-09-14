@@ -43,7 +43,7 @@ export const handler: MutationHook<any> = {
 // }).then((address: any) => {
 //     console.log("address added in ep" , address  );
 // })
-
+if(cartId){
 axios({
   url: 'http://localhost:3000/events/store/get-tax',
   method: 'POST',
@@ -112,6 +112,10 @@ axios({
  
   const data = input;
   return data ;
+}
+else{
+  window.location.reload();
+}
 
   },
   useHook: ({ fetch }) => () => {
